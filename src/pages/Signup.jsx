@@ -44,7 +44,7 @@ const Signup = () => {
         email: formData.email,
         password: formData.password,
       });
-      if (response.data.success) {
+      if (response.status === 200 || response.status === 201) {
         toast.success("Account created successfully!");
         navigate("/login");
       }
