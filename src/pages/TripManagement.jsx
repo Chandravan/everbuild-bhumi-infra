@@ -21,10 +21,10 @@ const TripManagement = () => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [formData, setFormData] = useState({
     date: "",
-    from: "",
-    to: "",
+    from: "PATNA",
+
     partiesCount: 1,
-    parties: [{ partyNo: 1, material: "" }],
+    parties: [{ partyNo: 1, material: "", destination: "" }],
     dailyExpense: "",
     truckPayment: "",
     advancePayment: "",
@@ -79,13 +79,17 @@ const TripManagement = () => {
       setEditingTrip(trip);
       setFormData({
         date: trip.date ? new Date(trip.date).toISOString().split("T")[0] : "",
-        from: trip.from,
-        to: trip.to,
+        from: trip.from || "PATNA",
+
         partiesCount: trip.parties?.length || 1,
         parties:
           trip.parties?.length > 0
-            ? trip.parties
-            : [{ partyNo: 1, material: "" }],
+            ? trip.parties.map((p) => ({
+                partyNo: p.partyNo,
+                material: p.material,
+                destination: p.destination || "",
+              }))
+            : [{ partyNo: 1, material: "", destination: "" }],
         dailyExpense: trip.dailyExpense,
         truckPayment: trip.truckPayment,
         advancePayment: trip.advancePayment,
@@ -97,10 +101,10 @@ const TripManagement = () => {
       setEditingTrip(null);
       setFormData({
         date: new Date().toISOString().split("T")[0],
-        from: "",
-        to: "",
+        from: "PATNA",
+
         partiesCount: 1,
-        parties: [{ partyNo: 1, material: "" }],
+        parties: [{ partyNo: 1, material: "", destination: "" }],
         dailyExpense: "",
         truckPayment: "",
         advancePayment: "",
@@ -119,9 +123,9 @@ const TripManagement = () => {
     setFormData({
       date: "",
       from: "",
-      to: "",
+
       partiesCount: 1,
-      parties: [{ partyNo: 1, material: "" }],
+      parties: [{ partyNo: 1, material: "", destination: "" }],
       dailyExpense: "",
       truckPayment: "",
       advancePayment: "",
@@ -145,6 +149,12 @@ const TripManagement = () => {
       tonMaterial: totalMaterial,
     });
 
+    const isAnyDestMissing = formData.parties.some((p) => !p.destination);
+    if (isAnyDestMissing) {
+      toast.error("Please select unloading location for all parties");
+      return;
+    }
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -154,9 +164,11 @@ const TripManagement = () => {
       const dataToSend = {
         ...formData,
         tonMaterial: totalMaterial,
+        to: formData.parties[formData.parties.length - 1].destination,
         parties: formData.parties.map((p) => ({
           partyNo: p.partyNo,
           material: Number(p.material),
+          destination: p.destination, // Ye dropdown se aayi value hai
         })),
         dailyExpense: parseFloat(formData.dailyExpense),
         truckPayment: parseFloat(formData.truckPayment),
@@ -622,7 +634,7 @@ const TripManagement = () => {
                 }}
                 className="input-field w-full"
               >
-                {[1, 2, 3, 4].map((num) => (
+                {[1, 2, 3, 4, 5, 6].map((num) => (
                   <option key={num} value={num}>
                     {num}
                   </option>
@@ -631,30 +643,73 @@ const TripManagement = () => {
             </div>
           </div>
 
-          {/* Party Materials */}
-          {formData.parties.map((party, index) => (
-            <div key={index} className="bg-gray-50 p-3 sm:p-4 rounded-lg">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Party {index + 1} - Material (Tons)
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                value={party.material}
-                onChange={(e) => {
-                  const updatedParties = [...formData.parties];
-                  updatedParties[index].material = e.target.value;
-                  setFormData({ ...formData, parties: updatedParties });
-                }}
-                className="input-field w-full"
-                placeholder="e.g., 10.5"
-              />
-            </div>
-          ))}
+          {/* Party Materials & Destinations */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-800 border-b pb-2">
+              Unloading Details
+            </h3>
+            {formData.parties.map((party, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm"
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    PARTY {index + 1}
+                  </span>
+                </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Material Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      Material (KG)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={party.material}
+                      onChange={(e) => {
+                        const updatedParties = [...formData.parties];
+                        updatedParties[index].material = e.target.value;
+                        setFormData({ ...formData, parties: updatedParties });
+                      }}
+                      className="input-field w-full"
+                      placeholder="Weight"
+                    />
+                  </div>
+
+                  {/* Dropdown for Destination */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      Unloading Location
+                    </label>
+                    <select
+                      required
+                      value={party.destination || ""}
+                      onChange={(e) => {
+                        const updatedParties = [...formData.parties];
+                        updatedParties[index].destination = e.target.value;
+                        setFormData({ ...formData, parties: updatedParties });
+                      }}
+                      className="input-field w-full"
+                    >
+                      <option value="">Select Drop Point</option>
+                      {locations.map((loc) => (
+                        <option key={loc._id} value={loc.toCity}>
+                          {loc.toCity}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Total material */}
           <div className="bg-blue-50 p-3 sm:p-4 rounded-lg">
             <p className="text-sm sm:text-base font-semibold text-blue-900">
-              Total Material: {totalMaterial} Tons
+              Total Material: {totalMaterial} KG
             </p>
           </div>
 
@@ -676,30 +731,6 @@ const TripManagement = () => {
               />
               {errors.from && (
                 <p className="text-red-500 text-xs mt-1">{errors.from}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                To *
-              </label>
-              <select
-                required
-                value={formData.to}
-                onChange={(e) =>
-                  setFormData({ ...formData, to: e.target.value })
-                }
-                className={`input-field w-full ${errors.to ? "border-red-500" : ""}`}
-              >
-                <option value="">Select Destination</option>
-                {locations.map((loc) => (
-                  <option key={loc._id} value={loc.toCity}>
-                    {loc.toCity}
-                  </option>
-                ))}
-              </select>
-              {errors.to && (
-                <p className="text-red-500 text-xs mt-1">{errors.to}</p>
               )}
             </div>
           </div>
@@ -834,7 +865,7 @@ const TripManagement = () => {
             >
               <option value="">Select partner</option>
               <option value="Rohit">Rohit</option>
-              <option value="Partner 2">Partner 2</option>
+              <option value="Raj Gautam">Raj Gautam</option>
             </select>
             {errors.paymentBy && (
               <p className="text-red-500 text-xs mt-1">{errors.paymentBy}</p>

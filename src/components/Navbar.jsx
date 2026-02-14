@@ -130,7 +130,7 @@ const Navbar = () => {
                     className="text-2xl font-bold logo-gradient"
                     style={{ fontFamily: "Outfit, sans-serif" }}
                   >
-                    Transport MS
+                    EVERBUILD BHUMI INFRA
                   </h1>
                   <p className="text-xs text-gray-500 font-medium">
                     Management System

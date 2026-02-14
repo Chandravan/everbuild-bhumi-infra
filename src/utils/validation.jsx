@@ -42,8 +42,17 @@ export const validateTrip = (formData) => {
   if (!formData.date) errors.date = "Date is required";
   if (!formData.from || formData.from.trim() === "")
     errors.from = "Starting location is required";
-  if (!formData.to || formData.to.trim() === "")
-    errors.to = "Destination is required";
+  if (!formData.parties || formData.parties.length === 0) {
+    errors.parties = "At least one party is required";
+  } else {
+    // Har party ka destination check karein
+    const hasInvalidDest = formData.parties.some(
+      (p) => !p.destination || p.destination.trim() === "",
+    );
+    if (hasInvalidDest) {
+      errors.to = "All unloading locations must be selected";
+    }
+  }
   if (
     !formData.tonMaterial ||
     isNaN(formData.tonMaterial) ||

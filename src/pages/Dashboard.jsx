@@ -59,8 +59,8 @@ const Dashboard = () => {
       const drivers = driversRes.data;
       const trips = tripsRes.data;
       const totalProfit = totalProfitRes.data?.totalProfit || 0;
-      const partner1Total = totalByPartnerRes.data?.partner1Total || 0;
-      const partner2Total = totalByPartnerRes.data?.partner2Total || 0;
+      const RohitTotal = totalByPartnerRes.data?.RohitTotal || 0;
+      const RajGautamTotal = totalByPartnerRes.data?.RajGautamTotal || 0;
       const due = totalDueRes.data?.totalDue || 0;
 
       setStats({
@@ -71,8 +71,8 @@ const Dashboard = () => {
       });
 
       setPartnerTotals({
-        partner1: partner1Total,
-        partner2: partner2Total,
+        partner1: RohitTotal,
+        partner2: RajGautamTotal,
       });
 
       setTotalDue(due);
@@ -154,7 +154,7 @@ const Dashboard = () => {
       icon: "⚠️",
       gradient: "from-rose-600 via-red-500 to-pink-400",
       shadowColor: "shadow-rose-500/20",
-      link: "/trucks",
+      link: "/due-payments",
       trend: calculateTrend(totalDue, Math.max(0, Math.floor(totalDue * 1.05))), // Mock: 5% reduction (negative trend is good)
     },
   ];
@@ -180,7 +180,7 @@ const Dashboard = () => {
       percentageValue: partner1Percentage,
     },
     {
-      title: "Partner 2's Payments",
+      title: "Raj Gautam's Payments",
       value: formatCurrency(partnerTotals.partner2),
       icon: "🤝",
       gradient: "from-fuchsia-600 via-purple-500 to-pink-400",

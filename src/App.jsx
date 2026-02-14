@@ -16,6 +16,7 @@ import TripManagement from "./pages/TripManagement";
 import TripDetail from "./pages/TripDetail";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import DuePayments from "./pages/DuePayments";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -67,6 +68,7 @@ function App() {
                       <Route path="/drivers" element={<DriverManagement />} />
                       <Route path="/trips" element={<TripManagement />} />
                       <Route path="/trips/:id" element={<TripDetail />} />
+                      <Route path="/due-payments" element={<DuePayments />} />
                     </Routes>
                   </main>
                 </div>

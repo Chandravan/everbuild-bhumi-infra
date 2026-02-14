@@ -90,4 +90,10 @@ export const authAPI = {
   login: (data) => api.post("/auth/login", data),
 };
 
+export const dueAPI = {
+  totalDue: () => api.get("/trips/total-due"),
+  getDuePayments: () => api.get("/due/due-payments"),
+  markAsPaid: (id) => api.put(`/due/mark-paid/${id}`),
+};
+
 export default api;
