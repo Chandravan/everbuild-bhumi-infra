@@ -75,6 +75,8 @@ export const tripAPI = {
   create: (data) => api.post("/trips/create", data),
   update: (id, data) => api.put(`/trips/${id}`, data),
   delete: (id) => api.delete(`/trips/${id}`),
+  updatePartyDetails: (id, partyId, data) =>
+    api.patch(`/trips/${id}/party/${partyId}`, data),
   //getStats: () => api.get("/trips/stats"),
   totalProfit: () => api.get("/trips/total-profit"),
   totalByPartner: () => api.get("/trips/total-by-partner"),

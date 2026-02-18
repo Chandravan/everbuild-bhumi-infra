@@ -167,7 +167,7 @@ const DuePayments = () => {
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
                         <span className="text-xs font-bold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg border border-slate-200 font-mono">
-                          {trip.truck?.truckNumber || "N/A"}
+                          {trip.truckNumber || "N/A"}
                         </span>
                       </td>
                       <td className="px-6 py-5">
